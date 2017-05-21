@@ -20,7 +20,7 @@ $().ready(function () {
 
 	local.drawArea = Raphael("drawAreaSource", local.drawWidth+1, local.drawHeight+1);
 	$("#wrapper").css("float", "left");
-	
+
 	var str = "";
 	for(x=0;x<local.drawWidth+1;x+=local.gridSize)
 		str += "M"+(x+0.5)+",0L"+(x+0.5)+","+(local.drawHeight+1);
@@ -34,7 +34,7 @@ $().ready(function () {
 		str += "M0,"+(x+0.5)+"L"+(local.drawWidth+1)+","+(x+0.5);
 	local.grid = local.drawArea.path(str).attr("stroke", "#A0A0ff");
 	local.axes = local.drawArea.path("M0,"+(local.centerY+0.5)+"L"+(local.drawWidth+1)+","+(local.centerY+0.5)+"M"+(local.centerX+0.5)+",0L"+(local.centerX+0.5)+","+(local.drawWidth+1));
-	
+
 	local.editTool = Raphael("editToolSource", 24, 24);
 	local.editTool.path("M8,3L8,20L12,17L14,23L18,20L15,15L18,13Z").attr("fill", "#E0E0E0");
 	$("#editToolSource").click(function() { setSelectedTool(local.editTool); });
@@ -50,7 +50,7 @@ $().ready(function () {
 	local.imgTool.circle(12,13,4).attr("fill", "#80F080");;
 	local.imgTool.path("M19,19L11,19L15,13Z").attr("fill", "#8080F0");
 	$("#imgToolSource").click(function() { setSelectedTool(local.imgTool); });
-	
+
 	local.editToolCorner = Raphael("editToolCorner", 24, 24);
 	local.editToolCorner.path("M3,14L18,18L14,3");
 	local.editToolCorner.rect(15,15,6,6);
@@ -60,9 +60,9 @@ $().ready(function () {
 	local.editToolSmooth.path("M21,11L11,21");
 	local.editToolSmooth.rect(8,18,6,6);
 	local.editToolSmooth.rect(18,8,6,6);
-	
+
 	setSelectedTool(local.editTool);
-	
+
 	$("#editToolCorner").click(function () {
 		if (local.selectedIdx < 0) return;
 		local.paths[local.currentPath].points[local.selectedIdx].type = 0;
@@ -108,9 +108,9 @@ $().ready(function () {
 	$("#exportArea").keyup(function() {
 		var str = $("#exportArea").val();
 		if (str == local.oldExportStr) return;
-		
+
 		local.oldExportStr = str;
-		
+
 		for(var i=0; i<local.paths.length; i++)
 		{
 			for(var j=0; j<local.paths[i].points.length; j++)
@@ -123,7 +123,7 @@ $().ready(function () {
 		local.paths = new Array();
 		local.selectedIdx = -1;
 		optionStr = "";
-		
+
 		var startIdx = str.indexOf("[[");
 		var p = 0;
 		var prevEnd = 0;
@@ -162,14 +162,14 @@ $().ready(function () {
 		}
 		if (p > 0)
 			local.paths[p-1].postfix = str.substr(prevEnd);
-		
+
 		optionStr += "<option>[New]";
 		$("#pathListbox").html(optionStr);
 		$("#pathListbox").prop("selectedIndex", 0);
 		local.currentPath = 0;
 		$("#pathListbox").change();
 	});
-	
+
 	//Functionality for loading an image behind the grid to trace over.
 	$("#traceImageURL").keyup(function() {
 		$("#traceImage").attr("src", $("#traceImageURL").val());
@@ -186,7 +186,7 @@ $().ready(function () {
 		$("#traceImage").css("left", local.centerX - $("#traceImage").width() / 2 + $("#drawAreaSource").offset().left);
 		$("#traceImage").css("top", local.centerY - $("#traceImage").height() / 2 + $("#drawAreaSource").offset().top);
 	});
-	
+
 	//Test if we have the FileReader class, which can read files from your local disk (by using the file upload input field)
 	if (typeof(FileReader) != "function")
 	{
@@ -196,7 +196,7 @@ $().ready(function () {
 		local.fileReader = new FileReader();
 		$("#traceImageFile").change(function() {
 			var files = $("#traceImageFile").prop("files");
-			if (files.length === 0) { return; }  
+			if (files.length === 0) { return; }
 			if (!local.imageFilter.test(files[0].type))
 			{
 				alert("You must select a valid image file!");
@@ -209,13 +209,13 @@ $().ready(function () {
 			$("#traceImage").attr("src", e.target.result);
 		};
 	}
-	
+
 	// Make the toolbox dragable
 	$(".toolboxtitle").mousedown(function (e) {
 		var toolbox = $("#toolbox");
 		toolbox.prop("dragX", e.pageX);
 		toolbox.prop("dragY", e.pageY);
-		
+
 	});
 	$(document).mousemove(function (e) {
 		var toolbox = $("#toolbox");
@@ -233,6 +233,14 @@ $().ready(function () {
 	});
 
 	//Fire the keyup event so if any text is filled in by the browser (on refresh for example) then we will show that
+	//$("#exportArea")[0].value = "Hello";
+	if(typeof parent.Blockly !== "undefined"){
+		if(typeof parent.Blockly.PolygonMutator.currentFieldTextInput !== "undefined"){
+			var polygon_text = parent.Blockly.PolygonMutator.currentFieldTextInput.text_;
+			$("#exportArea")[0].value = 'polygon('+polygon_text+');';
+		}
+	}
+
 	$("#exportArea").keyup();
 	$("#traceImageURL").keyup();
 });
@@ -246,7 +254,7 @@ function eventOnDrawArea(e)
 	if (e.pageY < das.offset().top) return false;
 	if (e.pageX > das.offset().left + local.drawWidth) return false;
 	if (e.pageY > das.offset().top + local.drawHeight) return false;
-	if (e.pageX >= toolbox.offset().left && e.pageX <= toolbox.offset().left + toolbox.width() && 
+	if (e.pageX >= toolbox.offset().left && e.pageX <= toolbox.offset().left + toolbox.width() &&
 		e.pageY >= toolbox.offset().top && e.pageY <= toolbox.offset().top + toolbox.height()) return false;
 	if (e.preventDefault) e.preventDefault();
 	e.stopPropagation();
@@ -264,9 +272,10 @@ function updatePath(path)
 	var str = "";
 	if (points.length > 1)
 	{
-		var p0 = points[points.length-1];
+        // JCOA: Modifications to avoid closed path
+		var p0 = points[0]; // points[points.length-1];
 		str += "M" + toX(p0.x) + "," + toY(p0.y);
-		for(var i=0; i<points.length; i++)
+		for(var i=1; i<points.length; i++) // i=0
 		{
 			var p1 = points[i];
 			if (p0.type == 1 || p1.type == 1)
@@ -281,7 +290,7 @@ function updatePath(path)
 			}
 			var p0 = p1;
 		}
-		str += "Z";
+		//str += "Z"; // JCOA: Do not close path. (Maybe change color of last line or an option to close path.
 	}
 	path.path.attr("path", str);
 }
@@ -368,13 +377,13 @@ function updateExport()
 $(document).mousedown(function(e) {
 	if (!eventOnDrawArea(e)) return;
 	local.drag = -1;
-	
+
 	if (local.currentTool == local.addTool)
 	{
 		if (local.paths.length <= local.currentPath)
 		{	//New path
 			$('#pathListbox option:eq('+local.currentPath+')').text('Path:' + (local.currentPath + 1));
-			$('#pathListbox').append($('<option>').text("[New]")); 
+			$('#pathListbox').append($('<option>').text("[New]"));
 			local.paths[local.currentPath] = {points: new Array(), prefix: "polygon(", postfix: ");\n"};
 		}
 		var box = local.drawArea.rect(toX(e.x) - local.gridSize / 2, toY(e.y) - local.gridSize / 2, local.gridSize, local.gridSize);
@@ -384,11 +393,11 @@ $(document).mousedown(function(e) {
 		updatePath(local.paths[local.currentPath]);
 		updateExport();
 	}
-	
+
 	if (local.currentTool == local.editTool)
 	{
 		if (local.paths[local.currentPath] == undefined) return;
-		
+
 		if (local.selectedIdx > -1 && local.paths[local.currentPath].points[local.selectedIdx].type == 1)
 		{
 			var p = local.paths[local.currentPath].points[local.selectedIdx];
@@ -405,7 +414,7 @@ $(document).mousedown(function(e) {
 				return;
 			}
 		}
-		
+
 		for(var i=0;i<local.paths[local.currentPath].points.length;i++)
 		{
 			if (local.paths[local.currentPath].points[i].x == e.x && local.paths[local.currentPath].points[i].y == e.y)
@@ -421,11 +430,11 @@ $(document).mousedown(function(e) {
 			}
 		}
 	}
-	
+
 	if (local.currentTool == local.remTool)
 	{
 		if (local.paths[local.currentPath] == undefined) return;
-		
+
 		for(var i=0;i<local.paths[local.currentPath].points.length;i++)
 		{
 			if (local.paths[local.currentPath].points[i].x == e.x && local.paths[local.currentPath].points[i].y == e.y)
@@ -442,7 +451,7 @@ $(document).mousemove(function(e) {
 	if (!eventOnDrawArea(e)) return;
 
 	$('#cursorCoordinates').text('x = '+e.x + ', y = ' + e.y);
-	
+
 	if (local.currentTool == local.editTool)
 	{
 		if (local.drag != -1)
